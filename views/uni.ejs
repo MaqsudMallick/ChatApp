@@ -41,7 +41,8 @@
                     <li><a href="/user/multi" class="nav-link px-2 text-white">Broadcast</a></li>
                 </ul>
                 <div class="text-end">
-                    <a href="#"><button type="button" class="btn btn-outline-light me-2">Broadcast
+                    <a href="#"><button type="button" class="btn btn-outline-light me-2" id="username">
+                            <%= username %>
                         </button></a>
                 </div>
                 <div class="text-end">
@@ -52,11 +53,9 @@
     </header>
     <br>
     <br>
-
-
     <div class="d-flex justify-content-around flex-row bd-highlight mb-5">
         <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white" style="width: 500px;">
-            <form action="/user/multi/send" enctype="multipart/form-data" method="post">
+            <form action="/user/<%= receiver %>/send" enctype="multipart/form-data" method="post">
                 <div class="input-group mb-3 input-group-lg">
                     <label for="dummyid" class="input-group-text">+</label>
                     <input type="file" name="fileupload" id="dummyid" />
@@ -67,40 +66,62 @@
             </form>
             <div id="messages" class="list-group list-group-flush border-bottom scrollarea">
                 <% msglist.forEach( msg=>{ %>
-                    <% if(msg.username==username) { %>
+                    <% if(msg.sender==username) { %>
                         <% t="active" %>
                             <a href="#" class="<%= t %> list-group-item list-group-item-action py-3 lh-sm"
                                 aria-current="true">
                                 <% } %>
                                     <div class="d-flex w-100 align-items-center justify-content-between">
                                         <strong class="mb-1">
-                                            <%= msg.username %>
+                                            <%= msg.sender %>
                                         </strong>
                                         <small>
-                                            <% if(msg.file!=undefined){ %>
-                                                <embed src="../<%= msg.username %>/<%= msg.file %>" width="90"
-                                                    height="90" /> <br>
+                                            <% if(msg.message.file!=undefined){ %>
+                                                <embed src="../<%= msg.sender %>/<%= msg.message.file %>" width="100"
+                                                    height="100" /> <br>
                                                 <% } %>
                                         </small>
                                     </div>
                                     <div class="col-10 mb-1 small">
                                         <span class="fs-2">
-                                            <%= msg.message %>
+                                            <%= msg.message.msg %>
                                         </span>
                                     </div>
                             </a>
                             <% }) %>
             </div>
-
         </div>
     </div>
+    <!-- <div id="messages">
+        <% msglist.forEach( msg=>{ %>
+            <p>
+                <%= msg.sender %> <br>
+                    <% if(msg.message.file!=undefined){ %>
+                        <embed src="/<%= msg.sender %>/<%= msg.message.file %>" width="90" height="90" /> <br>
+                        <% } %>
+                            <strong>
+                                <%= msg.message.msg %>
+                            </strong>
+            </p>
+            <% }) %>
+    </div>
+    <form action="/user/<%= receiver %>/send" enctype="multipart/form-data" method="post">
+        <input type="file" name="fileupload" />
+        <input type="text" name="message" />
+        <button type="submit">Send</button>
 
+    </form> -->
     <script>
         const socket = io()
-        socket.on('refresh', () => {
-            console.log('emit')
+        username = document.getElementById('username').innerText
+        // socket.emit("notify", receiver)
+        console.log(username)
+        socket.on(username, () => {
+            //console.log("reload")
             window.location.reload()
         })
+
+
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
